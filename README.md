@@ -1,13 +1,19 @@
 # 深入理解 AI Agent：设计原理与工程实践
 
+**[English](README.en.md) | 中文**
+
 本仓库是《深入理解 AI Agent：设计原理与工程实践》一书的开源主仓库，包含**全书正文**与**配套示例代码**。全书正文、配图与配套实验代码全部开源，欢迎把实验亲手跑一遍、提 issue 和 PR。
 
 ## 📖 电子书
 
-全书正文与编译好的 PDF 位于 [`book/`](book/) 目录：
+全书提供中英双语版本：
+
+- **中文 PDF（原版）**：[`book/深入理解-AI-Agent-李博杰-v1.1.pdf`](book/深入理解-AI-Agent-李博杰-v1.1.pdf)
+- **英文 PDF（English translation）**：[`book-en/Deep-Understanding-of-AI-Agents-Li-Bojie-v1.1.pdf`](book-en/Deep-Understanding-of-AI-Agents-Li-Bojie-v1.1.pdf)
+
+中文正文与编译好的 PDF 位于 [`book/`](book/) 目录，英文翻译位于 [`book-en/`](book-en/) 目录：
 
 - **正文源码**：`book/introduction.md`（引言）、`book/chapter1.md` ~ `book/chapter10.md`（第一至第十章）、`book/afterword.md`（后记）
-- **编译版 PDF**：[`book/深入理解-AI-Agent-李博杰-v1.1.pdf`](book/深入理解-AI-Agent-李博杰-v1.1.pdf)
 - **自行编译**：安装 pandoc、xelatex、ElegantBook 文档类与相关字体后，运行
 
   ```bash
