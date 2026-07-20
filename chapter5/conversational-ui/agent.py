@@ -175,7 +175,10 @@ def customize(client, model, frontend_dir: Path, requirement: str) -> dict:
     args = json.loads(msg.tool_calls[0].function.arguments)
 
     # 安全校验：只允许改写白名单内的文件。
-    for f in args.get("files", []):
-        if f["path"] not in EDITABLE_FILES:
-            raise RuntimeError(f"模型试图修改非白名单文件：{f['path']}")
+    files = args.get("files") or []
+    for f in files:
+        path = f.get("path")
+        if path not in EDITABLE_FILES:
+            raise RuntimeError(f"模型试图修改非白名单文件：{path}")
+    args["files"] = files
     return args

@@ -185,7 +185,10 @@ def _parse_only(only):
     for part in only.split(","):
         part = part.strip()
         if part:
-            ids.add(int(part))
+            try:
+                ids.add(int(part))
+            except ValueError:
+                raise SystemExit(f"题号必须是整数：{part!r}（--only 形如 1,5,10）")
     unknown = ids - {q["id"] for q in QUESTIONS}
     if unknown:
         raise SystemExit(f"未知题号：{sorted(unknown)}（有效题号 1~{len(QUESTIONS)}）")

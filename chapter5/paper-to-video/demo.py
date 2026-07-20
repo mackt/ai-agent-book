@@ -184,7 +184,7 @@ def run(cmd: list) -> str:
 
 
 def ffprobe_duration(path: Path) -> float:
-    """用 ffprobe 读取媒体文件时长（秒）。"""
+    """用 ffprobe 读取媒体文件时长（秒）。缺少时长元数据时 ffprobe 输出 N/A，给出清晰报错。"""
     out = run(
         [
             "ffprobe", "-v", "error",
@@ -193,7 +193,10 @@ def ffprobe_duration(path: Path) -> float:
             str(path),
         ]
     )
-    return float(out.strip())
+    out = out.strip()
+    if not out or out == "N/A":
+        raise RuntimeError(f"ffprobe 无法读取时长（文件缺少时长元数据或不是音视频文件）：{path}")
+    return float(out)
 
 
 def load_slides_file(path: Path) -> list:

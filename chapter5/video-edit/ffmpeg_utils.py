@@ -47,13 +47,16 @@ def run(cmd, desc="ffmpeg 命令"):
 
 
 def probe_duration(path: str) -> float:
-    """返回视频时长（秒）。"""
+    """返回视频时长（秒）。文件缺少时长元数据时 ffprobe 输出 N/A，给出清晰报错。"""
     proc = run(
         ["ffprobe", "-v", "error", "-show_entries", "format=duration",
          "-of", "default=noprint_wrappers=1:nokey=1", path],
         desc="ffprobe 读取时长",
     )
-    return float(proc.stdout.strip())
+    out = proc.stdout.strip()
+    if not out or out == "N/A":
+        raise RuntimeError(f"ffprobe 无法读取时长（文件缺少时长元数据或不是音视频文件）：{path}")
+    return float(out)
 
 
 def probe_streams(path: str) -> dict:

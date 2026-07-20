@@ -93,6 +93,14 @@ def _extract_json(text: str) -> dict:
     return json.loads(m.group(0))
 
 
+def _num(value, default: float) -> float:
+    """把 LLM 返回的数值字段转成 float；字段缺失、为 null 或非法时回退 default。"""
+    try:
+        return float(value)
+    except (TypeError, ValueError):
+        return default
+
+
 class TokenMeter:
     """累计 token，用于对比'子 Agent 隔离截图'带来的主上下文节省。"""
 
@@ -144,7 +152,8 @@ class VideoAnalyzerAgent:
         )
         self.meter.add(resp)
         data = _extract_json(resp.choices[0].message.content)
-        return float(data["start"]), float(data["end"]), data.get("reason", "")
+        # 模型可能省略 start/end 或返回 null——按约定的 -1 哨兵处理，走兜底逻辑。
+        return _num(data.get("start"), -1.0), _num(data.get("end"), -1.0), data.get("reason", "")
 
     def locate(self, video, question, coarse_interval=10.0, fine_interval=1.0,
                frame_dir="output/frames"):
@@ -260,7 +269,8 @@ class ProposerAgent:
         )
         self.meter.add(resp)
         d = _extract_json(resp.choices[0].message.content)
-        return max(0.0, float(d["start"])), min(duration, float(d["end"]))
+        # 模型可能省略 start/end 或返回 null——缺失时维持当前区间不变。
+        return max(0.0, _num(d.get("start"), start)), min(duration, _num(d.get("end"), end))
 
 
 # --------------------------------------------------------------------------- #

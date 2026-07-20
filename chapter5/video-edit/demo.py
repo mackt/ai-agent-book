@@ -197,7 +197,8 @@ def main():
     banner("步骤 1 | Proposer 解析自然语言需求")
     print(f"用户需求：{nl_request}")
     intent = proposer.parse_request(nl_request)
-    target_query = intent["target_query"]
+    # 模型可能省略 target_query 或返回 null——退化为用原始需求文本做视觉定位。
+    target_query = intent.get("target_query") or nl_request
     effects = intent.get("effects", [])
     print(f"解析结果：目标场景='{target_query}'  特效={effects}")
 
@@ -241,9 +242,9 @@ def main():
 
         review = reviewer.review(clip, target_query,
                                  frame_dir=os.path.join(OUT_DIR, "review_frames"))
-        print(f"  Reviewer：pass={review['pass']} score={review.get('score')} "
-              f"检查帧={['%.1f' % t for t in review['frames_checked']]}")
-        print(f"  Reviewer 反馈：{review['feedback']}")
+        print(f"  Reviewer：pass={review.get('pass')} score={review.get('score')} "
+              f"检查帧={['%.1f' % t for t in review.get('frames_checked', [])]}")
+        print(f"  Reviewer 反馈：{review.get('feedback', '（无）')}")
 
         if review.get("pass"):
             final_path = clip
@@ -255,7 +256,7 @@ def main():
             break
         # 未通过：Proposer 据反馈修正边界后重剪。
         ns, ne = proposer.revise_bounds(plan["start"], plan["end"],
-                                        review["feedback"], total_dur)
+                                        review.get("feedback", ""), total_dur)
         print(f"  Proposer 据反馈修正边界：[{ns:.1f}, {ne:.1f}]s")
         plan["start"], plan["end"] = ns, ne
 

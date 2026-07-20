@@ -67,7 +67,7 @@ def create_issues(problems: List[Dict[str, Any]], test_cases: List[Dict[str, Any
     issues = [build_issue(p, test_cases) for p in problems]
 
     if mock:
-        os.makedirs(os.path.dirname(out_path), exist_ok=True)
+        os.makedirs(os.path.dirname(out_path) or ".", exist_ok=True)
         payload = {"created_at": datetime.now().isoformat(),
                    "mode": "mock", "issues": issues}
         with open(out_path, "w", encoding="utf-8") as f:
