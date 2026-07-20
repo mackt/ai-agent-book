@@ -1,19 +1,19 @@
 # Hiểu sâu về AI Agent: Nguyên lý thiết kế và thực hành kỹ thuật
 
-**[English](README.en.md) | [中文](README.md) | Tiếng Việt | [தமிழ்](README.ta.md)**
+**[English](README.en.md) | [中文](README.md) | [台灣正體](README.zhtw.md) | Tiếng Việt | [தமிழ்](README.ta.md)**
 
 Kho này là kho mã nguồn mở chính thức của cuốn sách *Hiểu sâu về AI Agent: Nguyên lý thiết kế và thực hành kỹ thuật*, bao gồm **toàn bộ nội dung sách** và **mã ví dụ đi kèm**. Toàn bộ bản thảo, hình minh họa và mã thí nghiệm đều được mở nguồn; hoan nghênh bạn tự chạy các thí nghiệm, gửi issue và PR.
 
 ## 📖 Sách điện tử
 
 Mã nguồn của bản dịch tiếng Việt (do [@toanalien](https://github.com/toanalien) đóng góp) nằm trong thư mục [`book-vi/`](book-vi/). Bản
-gốc tiếng Trung ở [`book/`](book/), bản tiếng Anh ở [`book-en/`](book-en/) và
-bản Tamil ở [`book-ta/`](book-ta/).
+gốc tiếng Trung ở [`book/`](book/), bản Trung phồn thể (Đài Loan) ở [`book-zhtw/`](book-zhtw/),
+bản tiếng Anh ở [`book-en/`](book-en/) và bản Tamil ở [`book-ta/`](book-ta/).
 
 - **Mã nguồn tiếng Việt**: `book-vi/introduction.vi.md` (lời mở đầu),
   `book-vi/chapter1.vi.md` ~ `book-vi/chapter10.vi.md` (chương 1 đến chương 10),
   `book-vi/afterword.vi.md` (lời bạt)
-- **Bản PDF đã biên dịch**: [PDF tiếng Việt](book-vi/AI-Agents-in-Depth-Bojie-Li-v1.2-vi.pdf) · [PDF bản gốc tiếng Trung](book/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3-AI-Agent-%E6%9D%8E%E5%8D%9A%E6%9D%B0-v1.2.pdf)
+- **Bản PDF đã biên dịch**: [PDF tiếng Việt](book-vi/AI-Agents-in-Depth-Bojie-Li-v1.2-vi.pdf) · [PDF bản gốc tiếng Trung](book/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3-AI-Agent-%E6%9D%8E%E5%8D%9A%E6%9D%B0-v1.2.pdf) · [PDF Trung phồn thể (Đài Loan)](book-zhtw/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3-AI-Agent-%E6%9D%8E%E5%8D%9A%E6%9D%B0-v1.2-zhtw.pdf)
 - **Tự biên dịch**: sau khi cài pandoc, xelatex, lớp tài liệu ElegantBook và các phông chữ liên quan, chạy
 
   ```bash
@@ -846,7 +846,7 @@ Sách và mã đi kèm đều là mã nguồn mở; rất hoan nghênh cộng đ
 2. **Cải thiện mã và sửa Bug**: giúp các dự án đi kèm vững chắc hơn, dễ dùng hơn và gần thực tiễn sản xuất hơn
 3. **Dự án thực hành mới**: bổ sung/thay thế triển khai tốt hơn cho một thí nghiệm, hoặc đóng góp dự án ví dụ hoàn toàn mới
 4. **Cải thiện thiết kế hình minh họa của sách**: làm cho biểu đồ trong `book-vi/images/` rõ ràng và đẹp hơn
-5. **Bản dịch sang ngôn ngữ mới**: hoan nghênh dịch sách sang thêm nhiều ngôn ngữ — tham khảo cách tổ chức của các bản tiếng Anh (`book-en/`), Tamil (`book-ta/`) và tiếng Việt (`book-vi/`)
+5. **Bản dịch sang ngôn ngữ mới**: hoan nghênh dịch sách sang thêm nhiều ngôn ngữ — tham khảo cách tổ chức của các bản Trung phồn thể/Đài Loan (`book-zhtw/`), tiếng Anh (`book-en/`), Tamil (`book-ta/`) và tiếng Việt (`book-vi/`)
 
 Trước khi gửi, khuyến nghị tự chạy các thí nghiệm liên quan để xác nhận có thể tái hiện; cũng hoan nghênh mở issue trước để thảo luận ý tưởng.
 
