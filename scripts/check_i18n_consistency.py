@@ -11,11 +11,11 @@ CI 自动适配，无需改脚本。
   - 中文主 README：仓库根目录 README.md（不放进 docs/）
   - 其它语言主 README：docs/<locale>/README.md（如 docs/en-US/README.md）
   - 学习建议：docs/<locale>/LEARNING.md（含中文 docs/zh-CN/LEARNING.md）
-  - 章节 README：chapterN/README.<locale>.md
-    （ISO 639-1 + ISO 3166-1，如 README.zh-CN.md、README.en-US.md、README.zh-TW.md）
+  - 章节 README：中文默认 chapterN/README.md；其它语言 chapterN/README.<locale>.md
+    （ISO 639-1 + ISO 3166-1，如 README.en-US.md、README.zh-TW.md）
 
 严格规则：**只要某语言有自己的主 README，CI 就要求它完整**：
-  - 10 章 chapterN/README.<locale>.md
+  - 10 章 chapter README（中文为 README.md，其它为 README.<locale>.md）
   - docs/<locale>/LEARNING.md
   - 每章项目数与中文版对齐
   - git clone 命令数对齐
@@ -36,7 +36,9 @@ CHAPTERS = range(1, 11)
 
 
 def chapter_suffix(locale: str) -> str:
-    """章节 README 后缀：locale 本身，如 zh-CN → .zh-CN。"""
+    """章节 README 后缀：中文（zh-CN）默认为空 → README.md；其它如 en-US → .en-US。"""
+    if locale == "zh-CN":
+        return ""
     return f".{locale}"
 
 
@@ -147,7 +149,7 @@ def main() -> int:
     print()
 
     # ===== 检查 4：每个主 README 语言必须有全部 10 章 README =====
-    print("== 检查 4：chapterN/README.<locale>.md 齐全 ==")
+    print("== 检查 4：chapterN/README[.locale].md 齐全 ==")
     for locale in locales:
         suffix = chapter_suffix(locale)
         missing = []
@@ -166,7 +168,7 @@ def main() -> int:
     # ===== 检查 5：每章项目数对齐（所有主 README 语言）=====
     print("== 检查 5：每章项目数（所有语言对齐）==")
     zh_counts = {
-        n: project_count_in_table(ROOT / f"chapter{n}/README.zh-CN.md")
+        n: project_count_in_table(ROOT / f"chapter{n}/README.md")
         for n in CHAPTERS
     }
     total_zh = sum(zh_counts.values())
@@ -227,11 +229,11 @@ def main() -> int:
         print("  - 文件缺失：从中文版复制并翻译")
         print("  - 非中文主 README 放在 docs/<locale>/README.md")
         print("  - 学习建议放在 docs/<locale>/LEARNING.md")
-        print("  - 项目数不一致：参考中文版 chapterN/README.zh-CN.md 同步项目列表")
+        print("  - 项目数不一致：参考中文版 chapterN/README.md 同步项目列表")
         print("  - git clone 不一致：参考 README.md 附录段同步")
         print("  - 内容速览表结构：参考 README.md 的 5 列模板")
         print("  - 语言切换栏：参考 README.md 顶部，加入 docs/<locale>/README.md 链接")
-        print("  - 章节 README 命名：README.<locale>.md（如 README.en-US.md）")
+        print("  - 章节 README 命名：中文为 README.md，其它为 README.<locale>.md（如 README.en-US.md）")
         return 1
     print("✓ 所有语言版本结构一致/完整")
     return 0
