@@ -1,5 +1,6 @@
 site_name: 深入理解 AI Agent
 site_description: 深入理解 AI Agent：设计原理与工程实践 — 在线阅读版
+site_url: https://phaethix.github.io/ai-agent-book
 repo_url: https://github.com/phaethix/ai-agent-book
 repo_name: phaethix/ai-agent-book
 edit_uri: edit/main

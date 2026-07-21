@@ -62,8 +62,9 @@
             class="lang-select"
             aria-label="Switch language"></select>
 
-    {# Expose language config to the switcher script. #}
+    {# Expose language config + site root to the switcher script. #}
     <script>window.LANG_CONFIG = {{ config.extra.languages | tojson }};</script>
+    <script>window.SITE_ROOT = "{{ config.site_url }}";</script>
 
     {% if config.repo_url %}
       <div class="md-header__source">

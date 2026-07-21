@@ -1,14 +1,9 @@
 // Language switcher: populates a <select> dropdown in the header bar.
-// Selecting an option navigates to the same page in that edition and
-// rewrites all sidebar navigation links to match.
+// Navigates to the equivalent page in the target language, correctly
+// handling GitHub Pages sub-path deployments via window.SITE_ROOT.
 //
-// Config injected by header template: window.LANG_CONFIG = {
-//   zh:   { label: "中文",     prefix: "book/",          default: true },
-//   zhtw: { label: "繁體中文",  prefix: "book-zhtw/",      suffix: ".zhtw" },
-//   en:   { label: "English",  prefix: "-book-en/" },
-//   ta:   { label: "தமிழ்",    prefix: "book-ta/",        suffix: ".ta" },
-//   vi:   { label: "Tiếng Việt", prefix: "book-vi/",       suffix: ".vi" }
-// };
+// window.LANG_CONFIG  = { zh: {label, prefix, default?}, ... }
+// window.SITE_ROOT     = "https://phaethix.github.io/ai-agent-book"
 
 (function () {
   "use strict";
@@ -33,38 +28,39 @@
     return "zh";
   }
 
-  /** Map current URL → target edition (directory URLs, e.g. /book-ta/...). */
-  function mapUrl(currentPath, targetCode, currentLang) {
+  /** Map clean path (no site base) → target edition clean path (no leading /). */
+  function mapUrl(cleanPath, targetCode, currentLang) {
     if (targetCode === currentLang) return null;
     var src = cfg[currentLang];
     var dst = cfg[targetCode];
 
-    // Homepage: jump to the target edition's introduction.
-    if (
-      currentPath === "/" ||
-      currentPath === "/index.html" ||
-      currentPath.slice(-11) === "/index.html"
-    ) {
-      return "/" + dst.prefix + "introduction" + (dst.suffix || "") + "/";
+    // Homepage.
+    if (cleanPath === "/" || cleanPath === "/index.html") {
+      return dst.prefix + "introduction" + (dst.suffix || "") + "/";
     }
 
-    var url = currentPath.replace(src.prefix, dst.prefix);
+    var pp = cleanPath.replace(/^\//, "");
+    var url = pp.replace(src.prefix, dst.prefix);
 
-    // Strip the source suffix (directory form: "x.ta/" → "x/").
-    if (src.suffix) {
-      url = url.split(src.suffix + "/").join("/");
-    }
-    // Add the destination suffix before the trailing slash.
-    if (dst.suffix) {
-      url = url.replace(/\/$/, dst.suffix + "/");
-    }
+    if (src.suffix) url = url.split(src.suffix + "/").join("/");
+    if (dst.suffix) url = url.replace(/\/$/, dst.suffix + "/");
 
     return url;
   }
 
+  /** Strip the site's sub-path prefix (e.g. /ai-agent-book/) from a pathname. */
+  function siteBasePath() {
+    try { return new URL(window.SITE_ROOT).pathname + "/"; } catch (_) {}
+    // Fallback: compute from current page.
+    var p = location.pathname;
+    // Heuristic: site root is everything up to the first book/ segment.
+    var idx = Math.max(p.indexOf("book-en/"), p.indexOf("book-ta/"), p.indexOf("book-vi/"), p.indexOf("book-zhtw/"), p.indexOf("book/"));
+    if (idx === -1) return "/";
+    return p.slice(0, idx);
+  }
+
   // ── sidebar rewriting ─────────────────────────────────────
 
-  /** Rewrite sidebar nav <a> hrefs for non-default editions. */
   function rewriteSidebar(targetCode) {
     var target = cfg[targetCode];
     var defCode = null;
@@ -98,43 +94,36 @@
   // ── render ────────────────────────────────────────────────
 
   function render() {
-    var path = location.pathname;
-    var activeLang = detectLang(path);
+    var rawPath = location.pathname;
+    var basePath = siteBasePath();   // e.g. "/ai-agent-book/"
+    var cleanPath = "/" + rawPath.slice(basePath.length).replace(/^\//, "");
+    var activeLang = detectLang(cleanPath);
+    var siteRoot = window.SITE_ROOT.replace(/\/$/, "") + "/";
 
     var sel = document.getElementById("lang-selector");
     if (!sel) return;
-
-    // Skip if already populated.
     if (sel.children.length > 0) return;
 
-    // Build options.
     var codes = Object.keys(cfg);
     for (var idx = 0; idx < codes.length; idx++) {
       var code = codes[idx];
       var opt = document.createElement("option");
       opt.value = code;
       opt.textContent = cfg[code].label;
-      opt.disabled = false;
-      if (code === activeLang) {
-        opt.selected = true;
-        opt.disabled = true;  // can't select what you're already on
-      }
+      if (code === activeLang) { opt.selected = true; opt.disabled = true; }
       sel.appendChild(opt);
     }
 
-    // Navigate on change.
     sel.addEventListener("change", function () {
       var target = sel.value;
       if (!target || target === activeLang) return;
-      var url = mapUrl(path, target, activeLang);
-      if (url) location.href = url;
+      var rel = mapUrl(cleanPath, target, activeLang);
+      if (rel) location.href = siteRoot + rel;
     });
 
-    // Rewrite sidebar for non-default languages.
+    // Rewrite sidebar for non-default editions.
     var defCode = null;
-    for (var c in cfg) {
-      if (cfg[c].default) { defCode = c; break; }
-    }
+    for (var c in cfg) { if (cfg[c].default) { defCode = c; break; } }
     if (activeLang !== (defCode || "zh")) {
       rewriteSidebar(activeLang);
     }
