@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
-"""Flatten an EPUB table of contents within each chapter group."""
+"""Clean up an EPUB table of contents: strip section numbers from labels
+and keep pandoc's nested chapter/section hierarchy in nav.xhtml and toc.ncx."""
 
-import copy
 import os
+import re
 import sys
 import tempfile
 import zipfile
@@ -26,24 +27,6 @@ def toc_item(identifier, href, label):
     link = ET.SubElement(item, f"{{{XHTML}}}a", {"href": href})
     link.text = label
     return item
-
-
-def strip_section_numbers(element, namespace):
-    """递归删除所有 class=section-header-number 的子元素（连内容一起删）。
-    这样目录里只显示章节标题文字，不带 1.1 / 1.1.1 这种编号。"""
-    for span in list(element.iter(f"{{{namespace}}}span")):
-        classes = (span.get("class") or "").split()
-        if "section-header-number" in classes:
-            # 把 span 从父节点里移除（连同它的文本）
-            parent = span.getparent() if hasattr(span, "getparent") else None
-            if parent is None:
-                # ElementTree 没有 getparent，用遍历找
-                for parent in element.iter():
-                    if span in list(parent):
-                        parent.remove(span)
-                        break
-            else:
-                parent.remove(span)
 
 
 def flatten_nav(data, title_label, toc_label):
@@ -114,17 +97,16 @@ def flatten_ncx(data, title_label, toc_label):
             break
 
     # 2. 删掉每个 navLabel 里的编号前缀（如 "1.1 现代 Agent" → "现代 Agent"）
-    import re as _re
     for label_text in root.iter(f"{{{NCX}}}text"):
         if label_text.text:
             # 去掉开头的 "1.1.1 " 或 "1.1 " 或 "1 " 这种编号
-            label_text.text = _re.sub(r'^\d+(\.\d+)*\s+', '', label_text.text)
+            label_text.text = re.sub(r'^\d+(\.\d+)*\s+', '', label_text.text)
 
     # 3. 保留 pandoc 完整嵌套（不删任何 navPoint）
 
-    # 4. 给每个 navPoint 补 playOrder（按深度优先顺序递增）。
-    # NCX 规范要求 playOrder；pandoc 默认会加，但删除/重排 navPoint 后可能丢失。
-    # 缺 playOrder 时部分阅读器（如 Apple Books）会把嵌套层级拍平显示。
+    # 4. 统一按深度优先顺序重排 playOrder。
+    # NCX 规范要求 playOrder；缺失或乱序时部分阅读器（如 Apple Books）
+    # 会把嵌套层级拍平显示。
     counter = [0]
     def assign_play_order(point):
         counter[0] += 1
