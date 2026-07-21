@@ -3,7 +3,7 @@
 // rewrites the left sidebar (links + text) to match the new edition.
 //
 // window.LANG_CONFIG = { zh: {label, prefix, default?}, ... }
-// window.SITE_ROOT    = "https://phaethix.github.io/ai-agent-book"
+// window.SITE_ROOT    = "https://bojieli.github.io/ai-agent-book"
 
 (function () {
   "use strict";
@@ -78,54 +78,56 @@
     defCode = defCode || "zh";
     var defCfg = cfg[defCode];
 
-    var siteRoot = (window.SITE_ROOT || "").replace(/\/$/, "");
-    var defPrefix = (defCfg.prefix || "").replace(/\/$/, "");
-    var tgtPrefix = (target.prefix || "").replace(/\/$/, "");
+    var defPrefix = defCfg.prefix || "";
+    var tgtPrefix = target.prefix || "";
     var defSuf = defCfg.suffix || "";
     var tgtSuf = target.suffix || "";
 
+    // Site base path with a guaranteed trailing slash ("/ai-agent-book/" or "/").
+    var base = siteBasePath();
+    if (base.charAt(base.length - 1) !== "/") base += "/";
+
     function rewritePath(href) {
-      // Strip the site origin (turn absolute into relative).
-      if (siteRoot && href.indexOf(siteRoot) === 0) {
-        href = href.slice(siteRoot.length);
-      }
-      // Strip leading slash.
-      href = href.replace(/^\//, "");
-      // Replace default language prefix → target prefix.
-      if (defPrefix && href.indexOf(defPrefix) === 0) {
-        href = tgtPrefix + href.slice(defPrefix.length);
-      }
+      // MkDocs renders sidebar hrefs relative to the current page
+      // (e.g. "../../book/chapter2/" on a book-zhtw page), so resolve
+      // against the current URL before doing any prefix/suffix matching.
+      var url;
+      try { url = new URL(href, location.href); } catch (_) { return null; }
+      if (url.origin !== location.origin) return null;
+      var path = url.pathname;
+      if (path.indexOf(base) !== 0) return null;
+      var rel = path.slice(base.length);
+      // Only rewrite links into the default edition; leave everything
+      // else (e.g. the site homepage link) untouched.
+      if (!defPrefix || rel.indexOf(defPrefix) !== 0) return null;
+      rel = tgtPrefix + rel.slice(defPrefix.length);
       // Suffix swap (handles both .html and directory forms).
       // Source suffix is stripped; target suffix is inserted before .html or trailing /.
       if (defSuf) {
         // e.g. "chapter1.ta.html" → "chapter1.html"
-        href = href.split(defSuf + ".").join(".");
+        rel = rel.split(defSuf + ".").join(".");
         // also: "chapter1.ta/" → "chapter1/"
-        href = href.split(defSuf + "/").join("/");
+        rel = rel.split(defSuf + "/").join("/");
       }
       if (tgtSuf) {
         // e.g. "chapter1.html" → "chapter1.ta.html"
         //      "chapter1/"     → "chapter1.ta/"
-        href = href.split(".").join(".");
-        href = href.replace(/\.html$/, tgtSuf + ".html");
-        href = href.replace(/\/$/, tgtSuf + "/");
+        rel = rel.replace(/\.html$/, tgtSuf + ".html");
+        rel = rel.replace(/\/$/, tgtSuf + "/");
       }
-      return "/" + href;
+      return base + rel;
     }
 
     var links = document.querySelectorAll(".md-nav__link");
     for (var i = 0; i < links.length; i++) {
       var el = links[i];
       var href = el.getAttribute("href");
-      if (!href || href.charAt(0) === "#") continue;
-
-      // Rewrite href (handles both absolute and relative).
-      if (href.indexOf("http") === 0 || href.indexOf("/" + defPrefix) !== -1 || href.indexOf(defPrefix) !== -1) {
+      if (href && href.charAt(0) !== "#") {
         var newHref = rewritePath(href);
         if (newHref) el.setAttribute("href", newHref);
       }
 
-      // Always rewrite link text (regardless of href absoluteness).
+      // Always rewrite link text (regardless of href rewriting).
       var navText = el.querySelector(".md-ellipsis");
       if (navText) {
         var currentText = navText.textContent.trim();

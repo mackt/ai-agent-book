@@ -9,9 +9,14 @@ understand and would otherwise render as literal text:
 """
 import re
 
-_ID_ATTR = re.compile(r"\{#[^{}]*\}")
-_CLASS_ATTR = re.compile(r"\{\.[^{}]*\}")
-_TRAILING_ATTR = re.compile(r"\)\{[^{}]*\}")
+# Patterns are intentionally strict: they only match real Pandoc attribute
+# syntax so that inline code and code blocks (e.g. JSON `{"data": {...}}` or
+# JS `catch (e) {...}`) are never touched.
+_ID_ATTR = re.compile(r"\{#[\w:.-]+\}")
+_CLASS_ATTR = re.compile(r"\{\.[\w-]+(?:\s+\.[\w-]+)*\}")
+_TRAILING_ATTR = re.compile(
+    r"\)\{(?:#[\w:.-]+|\.[\w-]+(?:\s+\.[\w-]+)*|[\w-]+=[^{}]*)\}"
+)
 
 
 def on_page_markdown(markdown, **kwargs):
