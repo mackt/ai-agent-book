@@ -18,6 +18,7 @@
 | [model-benchmark](model-benchmark/) | ✅ | Benchmark ngang nhiều nhà cung cấp LLM API tương thích OpenAI; dùng giao diện streaming để đo chính xác độ trễ token đầu tiên (TTFT), đo các phân vị độ trễ đầu-cuối (p50/p95), throughput và tỷ lệ thành công dưới tải đồng thời. Một lệnh tạo bảng so sánh đa chiều, cho thấy chọn mô hình là đánh đổi nhiều chiều chứ không chỉ nhìn bảng xếp hạng. |
 | [agent-cost-analysis](agent-cost-analysis/) | ✅ | Phân rã toàn tuyến chi phí của nhiệm vụ Agent nhiều vòng điển hình (hoàn tiền chăm sóc khách hàng): dùng tracing nhẹ tự xây để ghi lại token input/output/cache, độ trễ và chi phí của từng lần gọi LLM; tổng hợp “bước nào đắt nhất”, rồi dùng A/B để định lượng mức tiết kiệm thực của thiết kế thân thiện KV-cache + nén ngữ cảnh. |
 | [tts-quality-eval](tts-quality-eval/) | ✅ | Dùng nhiều cấu hình TTS (model/voice/speed khác nhau) để tổng hợp cùng một nhóm văn bản thử thách, sau đó dùng LLM-as-a-Judge đa phương thức chấm điểm từng chiều theo Rubric (độ rõ/naturalness, v.v.), tổng hợp thành bảng so sánh cấu hình có thể tái hiện. |
+| [public-health-reporting-eval](public-health-reporting-eval/) | ✅ | Sử dụng dữ liệu tổng hợp nhân tạo theo phong cách DHIS2 để đánh giá khách quan lời gọi công cụ, độ chính xác tính toán, trích dẫn bằng chứng và các tuyên bố không có căn cứ của Agent báo cáo y tế công cộng. |
 
 ## Phân loại dự án
 
