@@ -401,6 +401,10 @@ GPT-5.6 是「模型即 Agent」概念的一個成熟例項——網路搜尋、
 
 某些機制（如基於規則的正則過濾）既可以用在輸入側也可以用在輸出側，上文按最常見的部署位置歸類。
 
+分類器護欄的一個代表性工業實踐是 Anthropic 的 Constitutional Classifiers[^ch1-3]。其核心機制有三點：一是**規則驅動**——用自然語言寫成的「憲法」（明確規定哪些內容允許、哪些禁止）生成合成訓練資料，訓練輸入輸出分類器；二是**上下文聯合判斷**——新一代系統把使用者提問和模型回答放在一起檢查，因為有些回答單獨看毫無問題（如「如何使用食品調味料」），只有對照提問才能發現「食品調味料」其實是化學試劑的暗語；三是**兩級篩查**——先用一個極輕量的探針（直接讀取模型內部啟用，幾乎零成本）檢查所有對話，發現可疑之處再交給更強的分類器複審，而不是直接拒絕。這樣第一級即使誤報較多也不影響使用者體驗，成本也大大降低。
+
+[^ch1-3]: Anthropic. "Next-generation Constitutional Classifiers: More efficient protection against universal jailbreaks", 2026. https://www.anthropic.com/research/next-generation-constitutional-classifiers；論文：Cunningham et al., "Constitutional Classifiers++: Efficient Production-Grade Defenses against Universal Jailbreaks", arXiv:2601.04603
+
 #### 人工干預
 
 **人工干預**（Human in the loop，又稱人在迴路）是關鍵的保護措施，它讓 Agent 能夠在不損害使用者體驗的情況下提升實際效能。這在部署早期尤為重要，有助於識別失敗模式、發現邊緣情況並建立健壯的評估週期。

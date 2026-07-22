@@ -401,6 +401,10 @@ Nó có thể được chia thành ba loại theo vị trí bảo vệ: phía đ
 
 Cần lưu ý rằng một số cơ chế (chẳng hạn như lọc thông thường dựa trên quy tắc) có thể được sử dụng ở cả phía đầu vào và phía đầu ra. Trên đây được phân loại theo các vị trí triển khai phổ biến nhất.
 
+Một ví dụ điển hình trong công nghiệp về guardrails dựa trên classifier là Constitutional Classifiers của Anthropic[^ch1-3]. Cơ chế cốt lõi gồm ba điểm. Thứ nhất, **điều khiển bằng quy tắc** — một "hiến pháp" viết bằng ngôn ngữ tự nhiên (quy định rõ nội dung nào được phép, nội dung nào bị cấm) được dùng để tạo dữ liệu huấn luyện tổng hợp, huấn luyện các classifier đầu vào và đầu ra; thứ hai, **phán đoán kết hợp theo ngữ cảnh** — hệ thống thế hệ mới kiểm tra câu hỏi của người dùng và câu trả lời của mô hình cùng nhau, vì một số câu trả lời xét riêng hoàn toàn vô hại (như "cách dùng phụ gia thực phẩm"), chỉ khi đối chiếu với câu hỏi mới phát hiện ra "phụ gia thực phẩm" thực chất là từ lóng chỉ hóa chất; thứ ba, **sàng lọc hai tầng** — trước tiên một probe cực kỳ nhẹ (đọc trực tiếp các activation bên trong mô hình, chi phí gần như bằng không) kiểm tra toàn bộ hội thoại, nếu phát hiện điều khả nghi thì chuyển cho classifier mạnh hơn xét duyệt lại thay vì từ chối ngay. Nhờ đó tầng thứ nhất dù có nhiều false positive cũng không ảnh hưởng đến trải nghiệm người dùng, đồng thời chi phí giảm đáng kể.
+
+[^ch1-3]: Anthropic. "Next-generation Constitutional Classifiers: More efficient protection against universal jailbreaks", 2026. https://www.anthropic.com/research/next-generation-constitutional-classifiers; bài báo: Cunningham et al., "Constitutional Classifiers++: Efficient Production-Grade Defenses against Universal Jailbreaks", arXiv:2601.04603
+
 #### Can thiệp thủ công
 
 **Human in the loop**(Human in the loop, hay còn gọi là human in the loop) là biện pháp bảo vệ quan trọng cho phép Agent cải thiện hiệu suất thực tế mà không ảnh hưởng đến trải nghiệm người dùng. Điều này đặc biệt quan trọng trong giai đoạn đầu triển khai để giúp xác định các phương thức lỗi, phát hiện các trường hợp khó khăn và thiết lập chu trình đánh giá mạnh mẽ.
